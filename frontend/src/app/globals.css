@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  
+  --card: #FFFFFF;
+  --card-fg: #0F172A;
+  
+  --popover: #FFFFFF;
+  --popover-fg: #0F172A;
+  
+  --primary: #0F6FFF;
+  --primary-fg: #FFFFFF;
+  
+  --secondary: #F1F5F9;
+  --secondary-fg: #0F172A;
+  
+  --muted: #F1F5F9;
+  --muted-fg: #64748B;
+  
+  --accent: #00B894;
+  --accent-fg: #FFFFFF;
+  
+  --destructive: #EF4444;
+  --destructive-fg: #FFFFFF;
+  
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #0F6FFF;
+  
+  --radius: 0.75rem;
+  
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  
+  --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #F8FAFC;
+  
+  --card: #0F172A;
+  --card-fg: #F8FAFC;
+  
+  --popover: #0F172A;
+  --popover-fg: #F8FAFC;
+  
+  --primary: #3B8AFF;
+  --primary-fg: #FFFFFF;
+  
+  --secondary: #1E293B;
+  --secondary-fg: #F1F5F9;
+  
+  --muted: #1E293B;
+  --muted-fg: #94A3B8;
+  
+  --accent: #00D1AA;
+  --accent-fg: #0F172A;
+  
+  --destructive: #F87171;
+  --destructive-fg: #0F172A;
+  
+  --border: #1E293B;
+  --input: #1E293B;
+  --ring: #3B8AFF;
+  
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  
+  --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-fg: var(--card-fg);
+  --color-popover: var(--popover);
+  --color-popover-fg: var(--popover-fg);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-secondary: var(--secondary);
+  --color-secondary-fg: var(--secondary-fg);
+  --color-muted: var(--muted);
+  --color-muted-fg: var(--muted-fg);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-destructive: var(--destructive);
+  --color-destructive-fg: var(--destructive-fg);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+  
+  --shadow-subtle: var(--shadow-subtle);
+  --shadow-premium: var(--shadow-premium);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+  }
+
+  .premium-shadow {
+    box-shadow: var(--shadow-premium);
+  }
+
+  .subtle-shadow {
+    box-shadow: var(--shadow-subtle);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes recording-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.animate-recording-pulse {
+  animation: recording-pulse 2s infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.2); }
+}
+
+.animate-wave {
+  animation: wave 1.2s ease-in-out infinite;
+}
