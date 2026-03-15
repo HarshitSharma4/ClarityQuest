@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8001:8000"
+    env_file:
+      - ../backend/.env
+    depends_on:
+      - mongo
+      - neo4j
+      - redis
+    restart: always
+
+  ai_worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ["python", "app/workers/ai_worker.py"]
+    env_file:
+      - ../backend/.env
+    depends_on:
+      - redis
+      - mongo
+      - neo4j
+    restart: always
+
+  redis:
+    image: redis/redis-stack-server:latest
+    ports:
+      - "6379:6379"
+    restart: always
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27018:27017" # Changed from 27017 to 27018 to avoid local conflicts
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+  neo4j:
+    image: neo4j:5.12
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes:
+      - neo4j_data:/data
+    restart: always
+
+  langfuse:
+    image: langfuse/langfuse:2 # Pinning to v2 to avoid ClickHouse requirement
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      - NEXTAUTH_SECRET=mysecret
+      - NEXTAUTH_URL=http://localhost:3000
+      - LANGFUSE_INIT_PROJECT_NAME=ClarityQuest
+      - LANGFUSE_INIT_PROJECT_PUBLIC_KEY=pk-lf-123
+      - LANGFUSE_INIT_PROJECT_SECRET_KEY=sk-lf-123
+      - SALT=my_super_secret_salt_for_langfuse
+      - ENCRYPTION_KEY=my_super_secret_encryption_key_32_chars_long_1234
+    depends_on:
+      - langfuse-db
+    restart: always
+
+  langfuse-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=langfuse
+      - POSTGRES_PASSWORD=langfuse
+      - POSTGRES_DB=langfuse
+    volumes:
+      - langfuse_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  mongo_data:
+  neo4j_data:
+  langfuse_data:

@@ -1,0 +1,53 @@
+# FastAPI stack
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-multipart
+
+# Auth & security
+python-jose[cryptography]
+passlib[bcrypt]
+
+# Database
+motor
+pymongo
+neo4j
+
+# Redis + queues
+redis
+redisvl
+rq
+
+# AI / LLM stack
+langgraph
+langchain
+langchain-core
+langchain-community
+langchain-google-genai
+google-generativeai
+google-genai
+
+# AI observability
+langfuse
+
+# Memory system
+mem0ai
+rank-bm25
+
+# Vector / embeddings dependencies
+numpy
+scikit-learn
+
+# Audio
+faster-whisper
+pydub
+ffmpeg-python
+
+# Utilities
+python-dotenv
+tqdm
+requests
+tenacity
+langsmith
+langchain_neo4j
