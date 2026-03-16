@@ -1,90 +1,85 @@
-# NestJS specific
-/dist
-/build
-/tmp
-
 # Dependencies
-/node_modules
+node_modules/
+backend/venv/
+backend/env/
+.venv/
+env/
+dist/
+build/
+.next/
 
 # Logs
-logs
 *.log
+logs/
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
+pnpm-debug.log*
 lerna-debug.log*
-
-# Environment variable files
-.env
-.env.development
-.env.test
-.env.production
-
-# Temp directory
-.temp
-.tmp
 
 # Environment Variables
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
+*.env
 
-# Python
-*__pycache__/
+# Python specific
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 
-# Virtual Environment
-venv/
-env/
-ENV/
-.venv/
-.env/
-
-# IDE
+# IDE and Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.project
+.settings/
+.classpath
+
+# OS specific
+.DS_Store
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Next.js specific
+.next/
+out/
+next-env.d.ts
+
+# FastAPI / Python Instance
+instance/
+.webassets-cache
+*.pid
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Database
 *.db
 *.sqlite3
 *.sqlite
+dump.rdb
 
-# Logs
-*.log
-logs/
+# Docker
+.docker/
+docker-compose.override.yml
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# FastAPI specific
-*.pid
-instance/
-.webassets-cache
+# Temporary files
+tmp/
+temp/
+.temp/
+.tmp/
