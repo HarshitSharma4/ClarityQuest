@@ -3,21 +3,27 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { mockVocabulary } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { VocabWord } from '@/lib/mock-data';
+import { mockVocabulary as fallbackVocab } from '@/lib/mock-data';
 import { Volume2, Plus, CheckCircle2, BookOpen, Brain, Sparkles, X, ChevronRight, Speaker } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function VocabularyPage() {
-  const [words, setWords] = useState(mockVocabulary);
+  const [words, setWords] = useState<VocabWord[]>(fallbackVocab);
   const [quizMode, setQuizMode] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    api.getVocabulary().then((data: any) => setWords(data)).catch(() => {});
+  }, []);
 
   const toggleMastered = (id: string) => {
     setWords((prev) => prev.map((w) => w.id === id ? { ...w, mastered: !w.mastered } : w));
+    api.toggleMastered(id).catch(() => {});
   };
 
   const masteryProgress = (words.filter(w => w.mastered).length / words.length) * 100;

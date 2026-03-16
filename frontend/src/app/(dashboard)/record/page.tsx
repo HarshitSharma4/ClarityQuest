@@ -1,5 +1,5 @@
 'use client';
-import React, { useState  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
@@ -15,16 +15,22 @@ import {
   Lightbulb,
   Tag,
 } from 'lucide-react';
-import { mockPracticePrompts } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import { mockPracticePrompts as fallbackPrompts } from '@/lib/mock-data';
 
 type RecordState = 'idle' | 'recording' | 'paused' | 'preview' | 'uploading' | 'submitted';
 
 export default function RecordPage() {
+  const [prompts, setPrompts] = useState<string[]>(fallbackPrompts);
   const [state, setState] = useState<RecordState>('idle');
   const [timer, setTimer] = useState(0);
   const [selectedPrompt, setSelectedPrompt] = useState(0);
   const [tags, setTags] = useState<string[]>(['interview']);
   const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    api.getPrompts().then((data: any) => setPrompts(data)).catch(() => {});
+  }, []);
 
   const waveformData = React.useMemo(() => [
     { height: 45, duration: 0.8 }, { height: 72, duration: 0.6 }, { height: 35, duration: 0.9 }, { height: 88, duration: 0.5 }, { height: 52, duration: 0.7 },

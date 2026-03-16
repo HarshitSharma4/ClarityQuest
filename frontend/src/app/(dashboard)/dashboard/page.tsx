@@ -1,11 +1,11 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge, JobChip, ScoreBadge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { mockUser, mockJobs, mockLessons } from '@/lib/mock-data';
+import { api } from '@/lib/api';
 import { getGreeting, formatDuration, cn } from '@/lib/utils';
 import {
   Mic,
@@ -20,9 +20,22 @@ import {
   Sparkles,
 } from 'lucide-react';
 
+import type { User, Lesson, Job } from '@/lib/mock-data';
+import { mockUser as fallbackUser, mockLessons as fallbackLessons, mockJobs as fallbackJobs } from '@/lib/mock-data';
+
 export default function DashboardPage() {
   const greeting = getGreeting();
-  const processingJobs = mockJobs.filter((j) => j.status === 'processing' || j.status === 'queued');
+  const [user, setUser] = useState<User>(fallbackUser);
+  const [lessons, setLessons] = useState<Lesson[]>(fallbackLessons);
+  const [jobs, setJobs] = useState<Job[]>(fallbackJobs);
+
+  useEffect(() => {
+    api.getMe().then((u: any) => setUser(u as unknown as User)).catch(() => {});
+    api.getLessons().then((l: any) => setLessons(l as unknown as Lesson[])).catch(() => {});
+    api.getJobs().then((j: any) => setJobs(j as unknown as Job[])).catch(() => {});
+  }, []);
+
+  const processingJobs = jobs.filter((j) => j.status === 'processing' || j.status === 'queued');
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
@@ -30,7 +43,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">
-            {greeting}, {mockUser.name} 👋
+            {greeting}, {user.name} 👋
           </h1>
           <p className="text-muted text-sm mt-1">
             {processingJobs.length > 0
@@ -41,7 +54,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2">
           <Badge variant="warning" className="px-3 py-1.5 h-auto">
             <Flame size={14} className="mr-1.5" />
-            {mockUser.streak} day streak
+            {user.streak} day streak
           </Badge>
         </div>
       </div>
@@ -52,7 +65,7 @@ export default function DashboardPage() {
           { href: '/goals', label: 'Start Assessment', icon: Target, variant: 'primary', desc: 'Take diagnostic' },
           { href: '/record', label: 'Upload Recording', icon: Upload, variant: 'accent', desc: 'Record 2 min' },
           { href: '/practice', label: 'Practice Now', icon: Mic, variant: 'warning', desc: 'Pronunciation drill' },
-          { href: '/lessons', label: 'Browse Lessons', icon: BookOpen, variant: 'success', desc: '6 new lessons' },
+          { href: '/lessons', label: 'Browse Lessons', icon: BookOpen, variant: 'success', desc: `${lessons.length} lessons` },
         ] as const).map((a) => (
           <Link key={a.href} href={a.href} className="no-underline">
             <Card hover className="text-center group p-4">
@@ -111,7 +124,7 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="space-y-3">
-              {mockLessons.slice(0, 3).map((lesson) => (
+              {lessons.slice(0, 3).map((lesson) => (
                 <Link key={lesson.id} href={`/lessons/${lesson.id}`} className="no-underline">
                   <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface transition-colors group">
                     <div className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center group-hover:bg-primary/10 transition-colors">
@@ -142,7 +155,7 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="space-y-3">
-              {mockJobs.map((job) => (
+              {jobs.map((job) => (
                 <Link key={job.id} href={job.status === 'done' ? `/results/${job.id}` : `/jobs/${job.id}`} className="no-underline">
                   <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/30">
                     <ScoreBadge score={job.status === 'done' ? 72 : 0} size="sm" />

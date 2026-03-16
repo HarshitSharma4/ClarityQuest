@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { Video, Upload, Eye, Hand, Smile, AlertTriangle, Shield, Lightbulb, Mic, ChevronRight, Play, CheckCircle2 } from 'lucide-react';
+import { Video, Upload, Eye, Hand, Smile, AlertTriangle, Shield, Lightbulb, Mic, ChevronRight, Play, CheckCircle2, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function NonVerbalPage() {

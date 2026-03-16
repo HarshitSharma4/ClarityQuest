@@ -3,15 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { mockNotifications } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { Notification } from '@/lib/mock-data';
+import { mockNotifications as fallbackNotifications } from '@/lib/mock-data';
 import { Bell, CheckCheck, Settings, BarChart3, Lightbulb, Award, Mic, Trash2, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>(fallbackNotifications);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    api.getNotifications().then((data: any) => setNotifications(data)).catch(() => {});
+  }, []);
 
   const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   const clearAll = () => setNotifications([]);

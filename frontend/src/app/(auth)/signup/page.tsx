@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Mail, Lock, User, Briefcase, ArrowRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
 
 export default function SignUpPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', role: 'professional' });
@@ -13,13 +14,16 @@ export default function SignUpPage() {
 
   useEffect(() => setMounted(true), []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await api.signup(form.name, form.email, form.password, form.role);
+      localStorage.setItem('token', res.access_token);
       window.location.href = '/goals';
-    }, 1000);
+    } catch {
+      setLoading(false);
+    }
   };
 
   if (!mounted) return null;

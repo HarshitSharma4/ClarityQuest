@@ -12,6 +12,9 @@ class MongoDB:
         self.db = self.client[settings.MONGO_DB]
         db_log("Connected to MongoDB")
 
+    def get_db(self):
+        return self.db
+
     async def close(self):
         if self.client:
             self.client.close()

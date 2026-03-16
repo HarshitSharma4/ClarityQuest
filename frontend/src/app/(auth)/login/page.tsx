@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Mail, Lock, ArrowRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,14 +15,18 @@ export default function LoginPage() {
 
   useEffect(() => setMounted(true), []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await api.login(email, password);
+      localStorage.setItem('token', res.access_token);
       window.location.href = '/dashboard';
-    }, 1000);
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+      setLoading(false);
+    }
   };
 
   if (!mounted) return null;

@@ -1,14 +1,22 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { JobChip } from '@/components/ui/Badge';
-import { mockJobs } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { Job } from '@/lib/mock-data';
+import { mockJobs as fallbackJobs } from '@/lib/mock-data';
 import { formatDate, formatTime } from '@/lib/utils';
 import { Plus, Clock, ExternalLink } from 'lucide-react';
 
 export default function JobsPage() {
+  const [jobs, setJobs] = useState<Job[]>(fallbackJobs);
+
+  useEffect(() => {
+    api.getJobs().then((data: any) => setJobs(data)).catch(() => {});
+  }, []);
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -29,7 +37,7 @@ export default function JobsPage() {
 
       {/* Job List */}
       <div className="space-y-3">
-        {mockJobs.map((job) => (
+        {jobs.map((job) => (
           <Link key={job.id} href={`/jobs/${job.id}`} className="no-underline block">
             <Card hover padding="md">
               <div className="flex items-center gap-4">

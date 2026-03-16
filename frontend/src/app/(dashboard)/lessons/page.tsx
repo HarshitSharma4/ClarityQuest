@@ -1,18 +1,25 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
-import { mockLessons } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { Lesson } from '@/lib/mock-data';
+import { mockLessons as fallbackLessons } from '@/lib/mock-data';
 import { cn, formatDuration } from '@/lib/utils';
 import { Search, Play, ArrowRight } from 'lucide-react';
 
 export default function LessonsPage() {
+  const [lessons, setLessons] = useState<Lesson[]>(fallbackLessons);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string>('all');
 
-  const filtered = mockLessons.filter((l) => {
+  useEffect(() => {
+    api.getLessons().then((data: any) => setLessons(data)).catch(() => {});
+  }, []);
+
+  const filtered = lessons.filter((l) => {
     const matchSearch = l.title.toLowerCase().includes(search.toLowerCase()) || l.tags.some(t => t.includes(search.toLowerCase()));
     const matchFilter = filter === 'all' || l.difficulty === filter;
     return matchSearch && matchFilter;

@@ -11,6 +11,7 @@ import {
   Voice,
   Topic 
 } from '@/lib/mock-data';
+import { api } from '@/lib/api';
 import { 
   Mic, 
   Bot, 
@@ -47,9 +48,17 @@ export default function AIMentorPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mentors, setMentors] = useState<Mentor[]>(mockMentors);
+  const [voices, setVoices] = useState<Voice[]>(mockVoices);
+  const [topics, setTopics] = useState<Topic[]>(mockTopics);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    api.getMentors().then(m => setMentors(m as unknown as Mentor[])).catch(() => {});
+    api.getVoices().then(v => setVoices(v as unknown as Voice[])).catch(() => {});
+    api.getTopics().then(t => setTopics(t as unknown as Topic[])).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -79,7 +88,7 @@ export default function AIMentorPage() {
     
     setMessages([introMsg]);
     setTimeout(() => {
-      setMessages(prev => [...prev, firstQuestion]);
+      setMessages((prev: Message[]) => [...prev, firstQuestion]);
     }, 1000);
   };
 
@@ -92,7 +101,7 @@ export default function AIMentorPage() {
         text: "I want to improve my confidence and handle tough questions better.",
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, userMsg]);
+      setMessages((prev: Message[]) => [...prev, userMsg]);
 
       setTimeout(() => {
         const feedback: Message = {
@@ -102,7 +111,7 @@ export default function AIMentorPage() {
           type: 'feedback',
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, feedback]);
+        setMessages((prev: Message[]) => [...prev, feedback]);
       }, 1500);
     } else {
       setIsRecording(true);
@@ -127,40 +136,41 @@ export default function AIMentorPage() {
               <p className="text-muted-foreground font-medium">Select a specialist to guide your conversation practice.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-              {mockMentors.map((mentor) => (
-                <Card 
-                  key={mentor.id}
-                  padding="none"
-                  hover
-                  className={cn(
-                    "overflow-hidden cursor-pointer transition-all border-2",
-                    selectedMentor?.id === mentor.id ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border/40"
-                  )}
-                  onClick={() => setSelectedMentor(mentor)}
-                >
-                  <div className="aspect-[4/3] bg-muted relative flex items-center justify-center">
-                    <Bot size={64} className="text-primary/20" />
-                    {selectedMentor?.id === mentor.id && (
-                      <div className="absolute top-4 right-4 bg-primary text-white p-1.5 rounded-full shadow-lg">
-                        <Check size={16} strokeWidth={3} />
-                      </div>
+              {mentors.map((mentor: Mentor) => (
+                <div key={mentor.id}>
+                  <Card 
+                    padding="none"
+                    hover
+                    className={cn(
+                      "overflow-hidden cursor-pointer transition-all border-2 h-full",
+                      selectedMentor?.id === mentor.id ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border/40"
                     )}
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg">{mentor.name}</h3>
-                      <Badge variant="secondary" className="text-[10px] uppercase font-black">{mentor.role}</Badge>
+                    onClick={() => setSelectedMentor(mentor)}
+                  >
+                    <div className="aspect-[4/3] bg-muted relative flex items-center justify-center">
+                      <Bot size={64} className="text-primary/20" />
+                      {selectedMentor?.id === mentor.id && (
+                        <div className="absolute top-4 right-4 bg-primary text-white p-1.5 rounded-full shadow-lg">
+                          <Check size={16} strokeWidth={3} />
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{mentor.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {mentor.expertise.map((exp, i) => (
-                        <span key={i} className="text-[10px] font-black uppercase tracking-tighter text-primary bg-primary/10 px-2 py-0.5 rounded">
-                          {exp}
-                        </span>
-                      ))}
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-lg">{mentor.name}</h3>
+                        <Badge variant="secondary" className="text-[10px] uppercase font-black">{mentor.role}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{mentor.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {mentor.expertise.map((exp: string, i: number) => (
+                          <span key={i} className="text-[10px] font-black uppercase tracking-tighter text-primary bg-primary/10 px-2 py-0.5 rounded">
+                            {exp}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               ))}
             </div>
             <div className="mt-auto flex justify-end py-6">
@@ -192,31 +202,32 @@ export default function AIMentorPage() {
               <p className="text-muted-foreground font-medium">How should your mentor sound during the practice?</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {mockVoices.map((voice) => (
-                <Card 
-                  key={voice.id}
-                  padding="lg"
-                  hover
-                  className={cn(
-                    "cursor-pointer text-center flex flex-col items-center gap-4 border-2 transition-all",
-                    selectedVoice?.id === voice.id ? "border-primary bg-primary/5 shadow-lg" : "border-border/40"
-                  )}
-                  onClick={() => setSelectedVoice(voice)}
-                >
-                  <div className={cn(
-                    "w-16 h-16 rounded-3xl flex items-center justify-center transition-colors",
-                    selectedVoice?.id === voice.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
-                  )}>
-                    <Volume2 size={32} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{voice.name}</h3>
-                    <p className="text-xs text-muted-foreground font-black uppercase tracking-widest mt-1">{voice.type}</p>
-                  </div>
-                  <Button variant="ghost" size="sm" className="w-full mt-2 group">
-                    <Headphones size={14} className="mr-2 group-hover:animate-pulse" /> Preview
-                  </Button>
-                </Card>
+              {voices.map((voice: Voice) => (
+                <div key={voice.id}>
+                  <Card 
+                    padding="lg"
+                    hover
+                    className={cn(
+                      "cursor-pointer text-center flex flex-col items-center gap-4 border-2 transition-all h-full",
+                      selectedVoice?.id === voice.id ? "border-primary bg-primary/5 shadow-lg" : "border-border/40"
+                    )}
+                    onClick={() => setSelectedVoice(voice)}
+                  >
+                    <div className={cn(
+                      "w-16 h-16 rounded-3xl flex items-center justify-center transition-colors",
+                      selectedVoice?.id === voice.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
+                    )}>
+                      <Volume2 size={32} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold">{voice.name}</h3>
+                      <p className="text-xs text-muted-foreground font-black uppercase tracking-widest mt-1">{voice.type}</p>
+                    </div>
+                    <Button variant="ghost" size="sm" className="w-full mt-2 group">
+                      <Headphones size={14} className="mr-2 group-hover:animate-pulse" /> Preview
+                    </Button>
+                  </Card>
+                </div>
               ))}
             </div>
             <div className="mt-auto flex justify-end py-6">
@@ -248,32 +259,33 @@ export default function AIMentorPage() {
               <p className="text-muted-foreground font-medium">What would you like to focus on today?</p>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              {mockTopics.map((topic) => (
-                <Card 
-                  key={topic.id}
-                  padding="lg"
-                  hover
-                  className={cn(
-                    "cursor-pointer flex items-start gap-6 border-2 transition-all",
-                    selectedTopic?.id === topic.id ? "border-primary bg-primary/5 shadow-md" : "border-border/40"
-                  )}
-                  onClick={() => setSelectedTopic(topic)}
-                >
-                  <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0",
-                    selectedTopic?.id === topic.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
-                  )}>
-                    {topic.id === 't1' && <MessageSquare size={24} />}
-                    {topic.id === 't2' && <ShieldCheck size={24} />}
-                    {topic.id === 't3' && <Target size={24} />}
-                    {topic.id === 't4' && <Users size={24} />}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-1">{topic.name}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{topic.description}</p>
-                  </div>
-                  {selectedTopic?.id === topic.id && <div className="ml-auto mt-1"><Check className="text-primary" /></div>}
-                </Card>
+              {topics.map((topic: Topic) => (
+                <div key={topic.id}>
+                  <Card 
+                    padding="lg"
+                    hover
+                    className={cn(
+                      "cursor-pointer flex items-start gap-6 border-2 transition-all h-full",
+                      selectedTopic?.id === topic.id ? "border-primary bg-primary/5 shadow-md" : "border-border/40"
+                    )}
+                    onClick={() => setSelectedTopic(topic)}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0",
+                      selectedTopic?.id === topic.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
+                    )}>
+                      {topic.id === 't1' && <MessageSquare size={24} />}
+                      {topic.id === 't2' && <ShieldCheck size={24} />}
+                      {topic.id === 't3' && <Target size={24} />}
+                      {topic.id === 't4' && <Users size={24} />}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg mb-1">{topic.name}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{topic.description}</p>
+                    </div>
+                    {selectedTopic?.id === topic.id && <div className="ml-auto mt-1"><Check className="text-primary" /></div>}
+                  </Card>
+                </div>
               ))}
             </div>
             <div className="mt-auto flex justify-end py-6">

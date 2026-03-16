@@ -4,7 +4,9 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Ca
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
-import { mockUser } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { User } from '@/lib/mock-data';
+import { mockUser as fallbackUser } from '@/lib/mock-data';
 import { useTheme } from 'next-themes';
 import {
   User,

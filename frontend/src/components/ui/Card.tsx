@@ -8,6 +8,9 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   glass?: boolean;
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   premium?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export const Card = ({

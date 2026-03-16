@@ -14,13 +14,19 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { mockNotifications } from '@/lib/mock-data';
+import { api } from '@/lib/api';
 
 export const AppHeader = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const unreadCount = mockNotifications.filter((n) => !n.read).length;
+  const [unreadCount, setUnreadCount] = useState(mockNotifications.filter((n) => !n.read).length);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    api.getNotifications().then((data: any) => {
+      setUnreadCount(data.filter((n: any) => !n.read).length);
+    }).catch(() => {});
+  }, []);
 
   if (!mounted) return null;
 

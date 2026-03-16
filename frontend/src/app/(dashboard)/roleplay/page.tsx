@@ -4,11 +4,14 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs } from '@/components/ui/Tabs';
-import { mockScenarios } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { Scenario } from '@/lib/mock-data';
+import { mockScenarios as fallbackScenarios } from '@/lib/mock-data';
 import { Mic, Send, MessageSquare, Lightbulb, Clock, History, ArrowRight, ChevronLeft, Play, Sparkles, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function RoleplayPage() {
+  const [scenarios, setScenarios] = useState<Scenario[]>(fallbackScenarios);
   const [activeCategory, setActiveCategory] = useState('HR');
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
@@ -16,10 +19,13 @@ export default function RoleplayPage() {
   const [submitted, setSubmitted] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    api.getScenarios().then((data: any) => setScenarios(data)).catch(() => {});
+  }, []);
 
-  const filtered = mockScenarios.filter((s) => s.category === activeCategory);
-  const scenario = mockScenarios.find((s) => s.id === selectedScenario);
+  const filtered = scenarios.filter((s) => s.category === activeCategory);
+  const scenario = scenarios.find((s) => s.id === selectedScenario);
 
   const handleRecord = () => {
     setIsRecording(true);

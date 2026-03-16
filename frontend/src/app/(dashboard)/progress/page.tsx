@@ -4,7 +4,9 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { mockProgressData, mockBadges } from '@/lib/mock-data';
+import { api } from '@/lib/api';
+import type { ProgressData } from '@/lib/mock-data';
+import { mockProgressData as fallbackProgress, mockBadges as fallbackBadges } from '@/lib/mock-data';
 import { TrendingUp, Download, Award, Flame, Calendar, BarChart3, ChevronRight, Share2, Sparkles } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { cn } from '@/lib/utils';
@@ -12,8 +14,16 @@ import { cn } from '@/lib/utils';
 export default function ProgressPage() {
   const [timeRange, setTimeRange] = useState('all');
   const [mounted, setMounted] = useState(false);
+  const [progressData, setProgressData] = useState<ProgressData[]>(fallbackProgress);
+  const [badges, setBadges] = useState(fallbackBadges);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    api.getProgress().then((data: any) => {
+      if (data.progress) setProgressData(data.progress);
+      if (data.badges) setBadges(data.badges);
+    }).catch(() => {});
+  }, []);
 
   if (!mounted) return null;
 
@@ -94,7 +104,7 @@ export default function ProgressPage() {
         </div>
         <div className="p-4 h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={mockProgressData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+            <AreaChart data={progressData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorOverall" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2}/>
@@ -176,7 +186,7 @@ export default function ProgressPage() {
                 <h3 className="font-black text-[10px] uppercase tracking-widest">Achievement Matrix</h3>
             </div>
           <div className="p-6 grid grid-cols-3 gap-4">
-            {mockBadges.map((badge) => (
+            {badges.map((badge: any) => (
               <div
                 key={badge.id}
                 className={cn(
